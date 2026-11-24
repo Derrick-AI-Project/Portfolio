@@ -701,140 +701,164 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  // Paste your private chat endpoint URL here (Cloudflare Worker or n8n webhook). No API key goes in this file.
-  const CHAT_URL = 'PASTE_YOUR_CHAT_ENDPOINT_URL_HERE';
+var EMAIL = "derrickperalta78@gmail.com";
+var LI = "https://www.linkedin.com/in/derrick-p-61b440336";
+var UW = "https://www.upwork.com/freelancers/~019cd7957c2e3cc76b";
+var CONTACT = "Email: <a href='mailto:" + EMAIL + "'>" + EMAIL + "</a><br>LinkedIn: <a href='" + LI + "' target='_blank' rel='noopener'>View profile</a><br>Upwork: <a href='" + UW + "' target='_blank' rel='noopener'>View profile</a>";
 
-  const SYSTEM = `You are Derrick Peralta's personal AI portfolio assistant. Speak in first person as Derrick (I, my, me). Be warm, professional, and concise. 2-4 sentences max unless listing items. Never invent info not listed here.
+var INTENTS = [
+  { id: "hire", keys: ["hire", "contact", "email", "reach", "connect", "book", "quote", "price", "pricing", "cost", "rate", "work with", "work together", "talk to", "call", "charge", "how much", "fee", "budget", "proposal"],
+    html: "I'd love to help. Pricing depends on the scope, so the fastest way is to send me a short message about what you need and I'll reply with next steps.<br><br>" + CONTACT },
+  { id: "latest", keys: ["latest", "recent", "newest", "last project", "case study", "real estate", "project", "portfolio"],
+    html: "My most recent project was for an Australian real estate client: a complete lead-capture funnel plus <b>9 automated GoHighLevel workflows</b>.<br><br>They cover lead qualification, follow-up sequences, inspection booking, no-show and cancellation handling, post-inspection nurturing, EOI submission and under-offer pipeline updates.<br><br>See the screenshots in the <a href='#real-workflows'>Real Work</a> section." },
+  { id: "tools", keys: ["tool", "tools", "stack", "software", "platform", "tech", "zapier", "figma", "canva", "webhook", "api"],
+    html: "My toolkit:<br>• <b>GoHighLevel</b> for funnels, CRM, pipelines and workflows<br>• <b>n8n, Make and Zapier</b> for automation and integrations<br>• <b>AI tools</b> (ChatGPT, Claude, Gemini) for AI workflows and chatbots<br>• <b>APIs and webhooks</b> for connecting systems<br>• <b>Figma and Canva</b> for funnel design<br><br>More in the <a href='#tools'>Tech Stack</a> section." },
+  { id: "services", keys: ["service", "services", "offer", "what do you do", "help", "specialize", "specialise", "package"],
+    html: "Here's how I can help:<br>• <b>Funnel design</b>: landing pages built to capture leads<br>• <b>Marketing automation</b>: email and SMS follow-up on autopilot<br>• <b>CRM setup</b>: pipelines, tags and lead tracking<br>• <b>AI automation</b>: chatbots and AI-powered workflows<br>• <b>Integrations</b>: connecting your tools together<br><br>Want to talk about your project? Use the Let's Connect button or email <a href='mailto:" + EMAIL + "'>" + EMAIL + "</a>." },
+  { id: "funnels", keys: ["funnel", "funnels", "landing page", "website", "page", "lead magnet", "demo"],
+    html: "I build conversion-focused funnels for different industries. My demo set covers a <b>medical clinic</b>, <b>home renovation</b>, <b>real estate</b>, <b>insurance</b>, <b>salon and barbershop</b> and an <b>e-commerce lead magnet</b>. Each one captures leads and can trigger automated follow-up.<br><br>Browse them in the <a href='#funnels'>Funnels</a> section." },
+  { id: "automation", keys: ["automat", "workflow", "follow up", "follow-up", "nurture", "sequence", "pipeline", "crm"],
+    html: "My automations run the whole lead journey: capture, CRM pipeline, follow-up emails and SMS, appointment booking and reminders, then team notifications. They use triggers, tags and if/else branching so each lead gets the right message at the right time.<br><br>See real examples in <a href='#real-workflows'>Real Work</a> and how it flows in <a href='#workflow'>How It Works</a>." },
+  { id: "ai", keys: ["chatbot", "chat bot", "bot ", "agent", "receptionist", "vapi", "voice", "ai ", "gpt", "gemini", "openai", "artificial"],
+    html: "Yes, I build AI automations and chatbots. That includes an AI receptionist using <b>n8n, VAPI, Google Calendar and Airtable</b> that answers calls and books appointments, plus AI-powered n8n workflows that use language models for tasks like job search and document writing.<br><br>If you'd like an AI assistant for your business, email me at <a href='mailto:" + EMAIL + "'>" + EMAIL + "</a>." },
+  { id: "n8n", keys: ["n8n"],
+    html: "<b>n8n</b> is a workflow automation platform that connects apps, APIs, databases and AI tools. I use it for more advanced automations than a CRM alone can handle, such as AI agents, data syncing and custom integrations. See one in <a href='#real-workflows'>Real Work</a>." },
+  { id: "ghl", keys: ["ghl", "gohighlevel", "go high level", "highlevel", "high level"],
+    html: "<b>GoHighLevel (GHL)</b> is an all-in-one CRM and marketing platform for funnels, pipelines, calendars and automations. It's my main platform for building lead-generation systems for service businesses." },
+  { id: "experience", keys: ["experience", "background", "resume", "cv ", "about", "who are", "who is", "yourself", "education", "career", "history", "years"],
+    html: "I'm a freelance GoHighLevel funnel and automation specialist. Before that, I spent years in financial sales and agency management (2006 to 2023), which is why I build systems around real sales processes, not just pretty pages. I also hold a BBA in Management.<br><br>Full details are in the <a href='#resume'>Resume</a> section." },
+  { id: "location", keys: ["where", "location", "based", "philippines", "timezone", "time zone", "available", "availability", "australia", "country"],
+    html: "I'm based in the Philippines and work remotely with international clients, including businesses in Australia. I'm currently available for new projects." },
+  { id: "thanks", keys: ["thanks", "thank", "appreciate", "awesome", "great"],
+    html: "You're welcome! If you'd like to discuss your project, you can reach me at <a href='mailto:" + EMAIL + "'>" + EMAIL + "</a>." },
+  { id: "greet", keys: ["hi ", "hello", "hey", "good morning", "good afternoon", "good evening"],
+    html: "Hi there! I can tell you about my latest project, tools, services, funnels or automation workflows. What would you like to know?" }
+];
 
-ABOUT: Philippines-based GoHighLevel Funnel Builder & Marketing Automation Specialist, freelancing for international clients.
+var FALLBACK = "I'm not sure about that one, but I can tell you about my <b>latest project</b>, <b>tools</b>, <b>services</b>, <b>funnels</b> or <b>automation workflows</b>. For anything specific, email me at <a href='mailto:" + EMAIL + "'>" + EMAIL + "</a>.";
 
-SKILLS: GoHighLevel (funnels, CRM, pipelines, workflows), Zapier, n8n, Make, AI Automation, API/Webhooks, SMS & Email sequences, Figma, Canva. I can also build AI chatbots like this one!
+function normalize(t) {
+  return " " + String(t).toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/ +/g, " ").trim() + " ";
+}
 
-LATEST PROJECT: Built a complete real estate lead capture funnel, landing pages, and 9 automated GHL workflows for an Australian real estate client. Workflows: Qualification Engine, Follow-Up Sequence, Stop Follow-Up, Inspection Booked, Inspection No Show, Inspection Cancelled, Post-Inspection Follow-Up, EOI Submitted, Under Offer.
+function localReply(text) {
+  var padded = normalize(text);
+  var best = null, bestScore = 0;
+  for (var i = 0; i < INTENTS.length; i++) {
+    var score = 0;
+    for (var j = 0; j < INTENTS[i].keys.length; j++) {
+      var raw = INTENTS[i].keys[j];
+      var k = normalize(raw);
+      if (raw.charAt(raw.length - 1) !== " ") { k = k.slice(0, -1); }
+      if (padded.indexOf(k) > -1) { score += raw.trim().split(" ").length; }
+    }
+    if (score > bestScore) { bestScore = score; best = INTENTS[i]; }
+  }
+  return best ? best.html : FALLBACK;
+}
 
-PORTFOLIO FUNNELS:
-1. Insurance Lead Gen — https://protect.dperalta.uk/home-page-133365
-2. Real Estate Inquiry — https://deehomes.dperalta.uk/home-page-769588
-3. Medical Clinic — https://athena-aesthetics.dperalta.uk/landing-page-page
-4. Salon & Barbershop — https://webraiders.dperalta.uk/home-660256
-5. E-Commerce Lead Magnet — https://weoutdoor.dperalta.uk/lead-magnet-inbound-funnel-main-page-9189
-6. Home Renovation — https://homepro.dperalta.uk/estimate
+document.addEventListener("DOMContentLoaded", function () {
+  // OPTIONAL: paste a free AI endpoint URL here later (n8n webhook or Cloudflare Worker).
+  // Leave empty to use the built-in answers only (free, no API key).
+  var CHAT_URL = "";
 
-AUTOMATION: 9 GHL workflows for a real estate campaign. Also built experimental n8n AI workflow: Slack-triggered job scraper + resume optimizer using OpenRouter GPT.
+  var toggle = document.getElementById("chat-toggle-btn");
+  var panel = document.getElementById("ai-chat-panel");
+  var closeBtn = document.getElementById("chat-close-btn");
+  var messages = document.getElementById("chat-messages");
+  var input = document.getElementById("chat-input");
+  var sendBtn = document.getElementById("chat-send-btn");
+  var hint = document.getElementById("chat-hint");
+  var suggBtns = document.querySelectorAll(".suggest-btn");
+  var isOpen = false, hintHidden = false, busy = false, history = [];
 
-EXPERIENCE: GHL Specialist 2024-Present (freelance). Financial sales and agency management roles 2006-2023. BBA Management, Philippine School of Business Administration.
-
-CONTACT:
-- Email: derrickperalta78@gmail.com
-- Portfolio: https://portfolio.dperalta.uk
-- LinkedIn: https://www.linkedin.com/in/derrick-p-61b440336
-- Upwork: https://www.upwork.com/freelancers/~019cd7957c2e3cc76b
-
-RULES: Describe latest project briefly, no client URLs. List all 6 funnel URLs when asked. Share email + LinkedIn + Upwork when someone wants to hire or connect. Share LinkedIn + Upwork for updated projects. Format each URL on its own line. Never say teaser phrases like "just ask and I'll share."`;
-
-  const toggle = document.getElementById('chat-toggle-btn');
-  const panel = document.getElementById('ai-chat-panel');
-  const closeBtn = document.getElementById('chat-close-btn');
-  const messages = document.getElementById('chat-messages');
-  const input = document.getElementById('chat-input');
-  const sendBtn = document.getElementById('chat-send-btn');
-  const hint = document.getElementById('chat-hint');
-  const suggsContainer = document.getElementById('chat-suggestions');
-  const suggBtns = document.querySelectorAll('.suggest-btn');
-
-  let history = [];
-  let isOpen = false;
-  let hintHidden = false;
-
-  // Auto-hide hint
-  setTimeout(() => {
-    if (!hintHidden) { hint.style.opacity = '0'; setTimeout(() => hint.style.display = 'none', 400); hintHidden = true; }
+  setTimeout(function () {
+    if (!hintHidden) { hint.style.opacity = "0"; setTimeout(function () { hint.style.display = "none"; }, 400); hintHidden = true; }
   }, 5000);
 
   function openChat() {
     isOpen = true;
-    panel.classList.add('open');
-    toggle.textContent = '✕';
-    toggle.style.background = '#1e2530';
-    toggle.style.border = '1px solid rgba(255,255,255,0.12)';
-    toggle.style.fontSize = '18px';
-    if (!hintHidden) { hint.style.display = 'none'; hintHidden = true; }
-    setTimeout(() => input.focus(), 150);
+    panel.classList.add("open");
+    toggle.textContent = "\u2715";
+    toggle.style.background = "#1e2530";
+    toggle.style.fontSize = "18px";
+    if (!hintHidden) { hint.style.display = "none"; hintHidden = true; }
+    setTimeout(function () { input.focus(); }, 150);
   }
-
   function closeChat() {
     isOpen = false;
-    panel.classList.remove('open');
-    toggle.textContent = '🤖';
-    toggle.style.background = '#c9a84c';
-    toggle.style.border = 'none';
-    toggle.style.fontSize = '24px';
+    panel.classList.remove("open");
+    toggle.textContent = "\uD83E\uDD16";
+    toggle.style.background = "#c9a84c";
+    toggle.style.fontSize = "24px";
   }
+  toggle.addEventListener("click", function () { if (isOpen) { closeChat(); } else { openChat(); } });
+  closeBtn.addEventListener("click", closeChat);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && isOpen) { closeChat(); } });
 
-  toggle.addEventListener('click', () => isOpen ? closeChat() : openChat());
-  closeBtn.addEventListener('click', closeChat);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && isOpen) closeChat(); });
-
-  function addMsg(role, text) {
-    const div = document.createElement('div');
-    div.className = 'msg ' + role;
-    const bubble = document.createElement('div');
-    bubble.className = 'msg-bubble';
-    const linked = text.replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
-    bubble.innerHTML = linked.replace(/\n/g, '<br>');
+  function addMsg(role, content, isHtml) {
+    var div = document.createElement("div");
+    div.className = "msg " + role;
+    var bubble = document.createElement("div");
+    bubble.className = "msg-bubble";
+    if (isHtml) { bubble.innerHTML = content; } else { bubble.textContent = content; bubble.style.whiteSpace = "pre-wrap"; }
     div.appendChild(bubble);
     messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;
   }
-
   function showTyping() {
-    const div = document.createElement('div');
-    div.className = 'msg ai'; div.id = 'typing-indicator';
-    div.innerHTML = '<div class="msg-bubble"><div class="msg-typing"><span></span><span></span><span></span></div></div>';
+    var div = document.createElement("div");
+    div.className = "msg ai";
+    div.id = "typing-indicator";
+    div.innerHTML = "<div class='msg-bubble'><div class='msg-typing'><span></span><span></span><span></span></div></div>";
     messages.appendChild(div);
     messages.scrollTop = messages.scrollHeight;
   }
-
   function removeTyping() {
-    const el = document.getElementById('typing-indicator');
-    if (el) el.remove();
+    var el = document.getElementById("typing-indicator");
+    if (el) { el.remove(); }
   }
 
-  async function sendMessage(text) {
-    text = text || input.value.trim();
-    if (!text) return;
-
-    suggsContainer.style.display = 'none';
-    addMsg('user', text);
-    history.push({ role: 'user', content: text });
-    input.value = '';
-    sendBtn.disabled = true;
-    showTyping();
-
-    try {
-      if (CHAT_URL.indexOf('http') !== 0) { throw new Error('endpoint not set'); }
-      const res = await fetch(CHAT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system: SYSTEM, messages: history })
+  function getReply(text) {
+    if (CHAT_URL.indexOf("http") === 0) {
+      history.push({ role: "user", content: text });
+      return fetch(CHAT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: history })
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        if (!d.reply) { throw new Error("no reply"); }
+        history.push({ role: "assistant", content: d.reply });
+        return { text: d.reply, html: false };
+      }).catch(function () {
+        return { text: localReply(text), html: true };
       });
-      const data = await res.json();
-      removeTyping();
-      const reply = data.reply || "Sorry, something went wrong. Please email derrickperalta78@gmail.com!";
-      history.push({ role: 'assistant', content: reply });
-      addMsg('ai', reply);
-    } catch(e) {
-      removeTyping();
-      addMsg('ai', "Having a connection issue. You can reach me directly at derrickperalta78@gmail.com!");
     }
-    sendBtn.disabled = false;
-    input.focus();
+    return new Promise(function (resolve) {
+      setTimeout(function () { resolve({ text: localReply(text), html: true }); }, 700);
+    });
   }
 
-  sendBtn.addEventListener('click', () => sendMessage());
-  input.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); sendMessage(); } });
-  suggBtns.forEach(btn => btn.addEventListener('click', () => sendMessage(btn.innerText)));
+  function sendMessage(text) {
+    text = (text || input.value).trim();
+    if (!text || busy) { return; }
+    busy = true;
+    addMsg("user", text, false);
+    input.value = "";
+    showTyping();
+    getReply(text).then(function (res) {
+      removeTyping();
+      addMsg("ai", res.text, res.html);
+      busy = false;
+      input.focus();
+    });
+  }
+
+  sendBtn.addEventListener("click", function () { sendMessage(); });
+  input.addEventListener("keypress", function (e) { if (e.key === "Enter") { e.preventDefault(); sendMessage(); } });
+  for (var i = 0; i < suggBtns.length; i++) {
+    (function (btn) { btn.addEventListener("click", function () { sendMessage(btn.textContent); }); })(suggBtns[i]);
+  }
 });
 </script>
 <!-- ============================================================
